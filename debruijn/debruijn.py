@@ -70,15 +70,31 @@ def get_arguments():
 
 
 def read_fastq(fastq_file):
-    pass
+    with open(fastq_file) as f:
+        for i in f:
+            yield next(f).rstrip()
+            next(f).rstrip()
+            next(f).rstrip()
 
 
 def cut_kmer(read, kmer_size):
-    pass
+    for i in range(len(read)):
+        if i+kmer_size <= len(read):
+            yield read[i:i+kmer_size]
+        else:
+            break
 
 
 def build_kmer_dict(fastq_file, kmer_size):
-    pass
+    dico = {}
+    for i in read_fastq(fastq_file):
+        for n in cut_kmer(i, kmer_size):
+            if n not in dico:
+                dico[n] = 1
+            else:
+                dico[n] += 1
+    return dico
+
 
 
 def build_graph(kmer_dict):
@@ -108,7 +124,7 @@ def simplify_bubbles(graph):
 def solve_entry_tips(graph, starting_nodes):
     pass
 
-def solve_out_tips(graph, ending_nodes):
+def solve_out_tips(graph, endiTCAGAGCTCTAGAGTTGGTTCTGAGAGAGATCGGTTACTCGGAGGAGGCTGTGTCACTCATAGAAGGGATCAATCACACCCACCACGTGTACCGAng_nodes):
     pass
 
 def get_starting_nodes(graph):
@@ -125,7 +141,32 @@ def save_contigs(contigs_list, output_file):
 
 
 def fill(text, width=80):
-    """Split text with a line return to respect fasta format"""
+    """Split text with a line returdef read_fastq(fastq_file):
+    with open(fastq_file) as f:
+        for i in f:
+            yield next(f).rstrip()
+            next(f).rstrip()
+            next(f).rstrip()
+
+
+def cut_kmer(read, kmer_size):
+    for i in range(len(read)):
+        if i+kmer_size <= len(read):
+            yield read[i:i+kmer_size]
+        else:
+            break
+
+
+def build_kmer_dict(fastq_file, kmer_size):
+    dico = {}
+    for i in read_fastq(fastq_file):
+        for n in cut_kmer(i, kmer_size):
+            if n not in dico:
+                dico[n] = 1
+            else:
+                dico[n] += 1
+    return dico
+n to respect fasta format"""
     return os.linesep.join(text[i:i+width] for i in range(0, len(text), width))
 
 def draw_graph(graph, graphimg_file):
@@ -137,7 +178,9 @@ def draw_graph(graph, graphimg_file):
     esmall = [(u, v) for (u, v, d) in graph.edges(data=True) if d['weight'] <= 3]
     #print(elarge)
     # Draw the graph with networkx
-    #pos=nx.spring_layout(graph)
+    #pos=nx.spring_layout(graph)if __name__ == '__main__':
+    for i in read_fastq("/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq"):
+        print(i)
     pos = nx.random_layout(graph)
     nx.draw_networkx_nodes(graph, pos, node_size=6)
     nx.draw_networkx_edges(graph, pos, edgelist=elarge, width=6)
@@ -152,29 +195,12 @@ def save_graph(graph, graph_file):
     """Save the graph with pickle
     """
     with open(graph_file, "wt") as save:
-            pickle.dump(graph, save)
-
-
-#==============================================================
-# Main program
-#==============================================================
-def main():
-    """
-    Main program function
-    """
-    # Get arguments
-    args = get_arguments()
-
-    # Fonctions de dessin du graphe
-    # A decommenter si vous souhaitez visualiser un petit 
-    # graphe
-    # Plot the graph
-    # if args.graphimg_file:
-    #     draw_graph(graph, args.graphimg_file)
-    # Save the graph in file
-    # if args.graph_file:
-    #     save_graph(graph, args.graph_file)
+        pickle.dump(graph, save)
 
 
 if __name__ == '__main__':
-    main()
+    file = '/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq'
+    kmer_size = 3
+    dico = {}
+    dico = build_kmer_dict(file, kmer_size)
+    dico.keys()
