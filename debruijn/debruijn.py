@@ -168,7 +168,10 @@ def get_contigs(graph, starting_nodes, ending_nodes):
     return contigs_list
 
 def save_contigs(contigs_list, output_file):
-    pass
+    with open(output_file, 'w') as f:
+        for i in range(len(contigs_list)):
+            f.write(f"contig_{i} len={contigs_list[i][-1]}\n")
+            f.fill(contigs_list[i])
 
 
 def fill(text, width=80):
@@ -209,10 +212,8 @@ if __name__ == '__main__':
     graph = build_graph(kmer_dico)
     starting_nodes = get_starting_nodes(graph)
     ending_nodes = get_sink_nodes(graph)
-    for path in nx.all_simple_paths(graph, starting_nodes[1], ending_nodes[0]):
-        tmp = path[0]
-        for i in range(len(path)):
-            tmp = tmp + path[i][-1]
+    contigs_list = get_contigs(graph, starting_nodes, ending_nodes)
+
 
 
 
