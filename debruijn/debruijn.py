@@ -162,7 +162,7 @@ def get_contigs(graph, starting_nodes, ending_nodes):
             if nx.has_path(graph, starting_nodes[i], ending_nodes[n]):
                 for path in nx.all_simple_paths(graph, starting_nodes[i], ending_nodes[n]):
                     tmp = path[0]
-                    for r in range(1, len(path)-1):
+                    for r in range(1, len(path)):
                         tmp = tmp + path[r][-1]
                     contigs_list.append((tmp, len(tmp)))
     return contigs_list
