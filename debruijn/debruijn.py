@@ -105,14 +105,11 @@ def build_graph(kmer_dict):
             value1 = key[i][:-1]
             value2 = key[i][1:]
             w = kmer_dict[key[i]]
-
-            G.add_edge(value1, value2, weight = w)
+            G.add_edge(value1, value2, weight=w)
         else:
             break
 
     return G
-
-    
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
     pass
@@ -140,13 +137,35 @@ def solve_out_tips(graph, ending_nodes):
     pass
 
 def get_starting_nodes(graph):
-    pass
+    nodes = list(graph.nodes())
+    starting_nodes = []
+    for i in range(len(nodes)):
+        if len(list(graph.predecessors(nodes[i]))) == 0:
+            starting_nodes.append(nodes[i])
+
+    return starting_nodes
+
 
 def get_sink_nodes(graph):
-    pass
+    nodes = list(graph.nodes())
+    ending_nodes = []
+    for i in range(len(nodes)):
+        if len(list(graph.successors(nodes[i]))) == 0:
+            ending_nodes.append(nodes[i])
+    
+    return ending_nodes
 
 def get_contigs(graph, starting_nodes, ending_nodes):
-    pass
+    contigs_list = []
+    for i in range(len(starting_nodes)):
+        for n in range(len(ending_nodes)):
+            if nx.has_path(graph, starting_nodes[i], ending_nodes[n]):
+                for path in nx.all_simple_paths(graph, starting_nodes[i], ending_nodes[n]):
+                    tmp = path[0]
+                    for r in range(1, len(path)-1):
+                        tmp = tmp + path[r][-1]
+                    contigs_list.append((tmp, len(tmp)))
+    return contigs_list
 
 def save_contigs(contigs_list, output_file):
     pass
@@ -175,7 +194,6 @@ def draw_graph(graph, graphimg_file):
     # save image
     plt.savefig(graphimg_file)
 
-
 def save_graph(graph, graph_file):
     """Save the graph with pickle
     """
@@ -185,20 +203,16 @@ def save_graph(graph, graph_file):
 
 if __name__ == '__main__':
     file = '/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq'
-    kmer_size = 3
+    kmer_size = 6
     kmer_dico = {}
     kmer_dico = build_kmer_dict(file, kmer_size)
-    
-    G = nx.DiGraph()
-    keys = list(kmer_dico.keys())
+    graph = build_graph(kmer_dico)
+    starting_nodes = get_starting_nodes(graph)
+    ending_nodes = get_sink_nodes(graph)
+    for path in nx.all_simple_paths(graph, starting_nodes[1], ending_nodes[0]):
+        tmp = path[0]
+        for i in range(len(path)):
+            tmp = tmp + path[i][-1]
 
-    for i in range(len(keys)):
-        if i+1 < len(keys):
-            value1 = keys[i]
-            value2 = keys[i+1]
-            w = kmer_dico[value1]
 
-            G.add_edge(value1, value2)
-        else:
-            break
-    print(len(keys))
+
