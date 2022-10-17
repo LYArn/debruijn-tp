@@ -96,17 +96,29 @@ def build_kmer_dict(fastq_file, kmer_size):
     return dico
 
 
-
 def build_graph(kmer_dict):
-    pass
+    G = nx.DiGraph()
+    key = list(kmer_dict.keys())
 
+    for i in range(len(key)):
+        if i + 1 <= len(key):
+            value1 = key[i][:-1]
+            value2 = key[i][1:]
+            w = kmer_dict[key[i]]
+
+            G.add_edge(value1, value2, weight = w)
+        else:
+            break
+
+    return G
+
+    
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
     pass
 
 def std(data):
     pass
-
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
@@ -124,7 +136,7 @@ def simplify_bubbles(graph):
 def solve_entry_tips(graph, starting_nodes):
     pass
 
-def solve_out_tips(graph, endiTCAGAGCTCTAGAGTTGGTTCTGAGAGAGATCGGTTACTCGGAGGAGGCTGTGTCACTCATAGAAGGGATCAATCACACCCACCACGTGTACCGAng_nodes):
+def solve_out_tips(graph, ending_nodes):
     pass
 
 def get_starting_nodes(graph):
@@ -141,32 +153,7 @@ def save_contigs(contigs_list, output_file):
 
 
 def fill(text, width=80):
-    """Split text with a line returdef read_fastq(fastq_file):
-    with open(fastq_file) as f:
-        for i in f:
-            yield next(f).rstrip()
-            next(f).rstrip()
-            next(f).rstrip()
-
-
-def cut_kmer(read, kmer_size):
-    for i in range(len(read)):
-        if i+kmer_size <= len(read):
-            yield read[i:i+kmer_size]
-        else:
-            break
-
-
-def build_kmer_dict(fastq_file, kmer_size):
-    dico = {}
-    for i in read_fastq(fastq_file):
-        for n in cut_kmer(i, kmer_size):
-            if n not in dico:
-                dico[n] = 1
-            else:
-                dico[n] += 1
-    return dico
-n to respect fasta format"""
+    """Split text with a line return to respect fasta format"""
     return os.linesep.join(text[i:i+width] for i in range(0, len(text), width))
 
 def draw_graph(graph, graphimg_file):
@@ -179,8 +166,6 @@ def draw_graph(graph, graphimg_file):
     #print(elarge)
     # Draw the graph with networkx
     #pos=nx.spring_layout(graph)if __name__ == '__main__':
-    for i in read_fastq("/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq"):
-        print(i)
     pos = nx.random_layout(graph)
     nx.draw_networkx_nodes(graph, pos, node_size=6)
     nx.draw_networkx_edges(graph, pos, edgelist=elarge, width=6)
@@ -201,6 +186,19 @@ def save_graph(graph, graph_file):
 if __name__ == '__main__':
     file = '/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq'
     kmer_size = 3
-    dico = {}
-    dico = build_kmer_dict(file, kmer_size)
-    dico.keys()
+    kmer_dico = {}
+    kmer_dico = build_kmer_dict(file, kmer_size)
+    
+    G = nx.DiGraph()
+    keys = list(kmer_dico.keys())
+
+    for i in range(len(keys)):
+        if i+1 < len(keys):
+            value1 = keys[i]
+            value2 = keys[i+1]
+            w = kmer_dico[value1]
+
+            G.add_edge(value1, value2)
+        else:
+            break
+    print(len(keys))
