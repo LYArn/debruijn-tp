@@ -48,7 +48,6 @@ def isfile(path):
         raise argparse.ArgumentTypeError(msg)
     return path
 
-
 def get_arguments():
     """Retrieves the arguments of the program.
       Returns: An object that contains the arguments
@@ -68,7 +67,6 @@ def get_arguments():
                         help="Save graph as image (png)")
     return parser.parse_args()
 
-
 def read_fastq(fastq_file):
     with open(fastq_file) as f:
         for i in f:
@@ -76,14 +74,12 @@ def read_fastq(fastq_file):
             next(f).rstrip()
             next(f).rstrip()
 
-
 def cut_kmer(read, kmer_size):
     for i in range(len(read)):
         if i+kmer_size <= len(read):
             yield read[i:i+kmer_size]
         else:
             break
-
 
 def build_kmer_dict(fastq_file, kmer_size):
     dico = {}
@@ -94,7 +90,6 @@ def build_kmer_dict(fastq_file, kmer_size):
             else:
                 dico[n] += 1
     return dico
-
 
 def build_graph(kmer_dict):
     G = nx.DiGraph()
@@ -145,7 +140,6 @@ def get_starting_nodes(graph):
 
     return starting_nodes
 
-
 def get_sink_nodes(graph):
     nodes = list(graph.nodes())
     ending_nodes = []
@@ -170,9 +164,8 @@ def get_contigs(graph, starting_nodes, ending_nodes):
 def save_contigs(contigs_list, output_file):
     with open(output_file, 'w') as f:
         for i in range(len(contigs_list)):
-            f.write(f"contig_{i} len={contigs_list[i][-1]}\n")
-            f.fill(contigs_list[i])
-
+            f.write(f">contig_{i+1} len={contigs_list[i][1]}\n")
+            f.write(fill(contigs_list[i][0]) + "\n")
 
 def fill(text, width=80):
     """Split text with a line return to respect fasta format"""
@@ -187,7 +180,7 @@ def draw_graph(graph, graphimg_file):
     esmall = [(u, v) for (u, v, d) in graph.edges(data=True) if d['weight'] <= 3]
     #print(elarge)
     # Draw the graph with networkx
-    #pos=nx.spring_layout(graph)if __name__ == '__main__':
+    #pos=nx.spring_layout(graph)
     pos = nx.random_layout(graph)
     nx.draw_networkx_nodes(graph, pos, node_size=6)
     nx.draw_networkx_edges(graph, pos, edgelist=elarge, width=6)
@@ -205,7 +198,7 @@ def save_graph(graph, graph_file):
 
 
 if __name__ == '__main__':
-    file = '/home/sdv/m2bi/aly/Metagenomic/debruijn-tp/data/eva71_two_reads.fq'
+    file = '/home/arnaud/metagenomic/data/eva71_two_reads.fq'
     kmer_size = 6
     kmer_dico = {}
     kmer_dico = build_kmer_dict(file, kmer_size)
@@ -213,7 +206,8 @@ if __name__ == '__main__':
     starting_nodes = get_starting_nodes(graph)
     ending_nodes = get_sink_nodes(graph)
     contigs_list = get_contigs(graph, starting_nodes, ending_nodes)
-
+    save_contigs(contigs_list, 'contig.txt')
+    
 
 
 
