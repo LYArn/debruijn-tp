@@ -16,6 +16,7 @@
 import argparse
 import os
 import sys
+from matplotlib.cbook import contiguous_regions
 import networkx as nx
 import matplotlib
 from operator import itemgetter
@@ -107,17 +108,31 @@ def build_graph(kmer_dict):
     return G
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
-    pass
+    for path in path_list:
+        if delete_entry_node and not delete_sink_node:
+            graph.remove_nodes_from(path[:-1])
+        elif not delete_entry_node and delete_sink_node:
+            graph.remove_nodes_from(path[1:])
+        elif not delete_entry_node and not delete_sink_node:
+            graph.remove_nodes_from(path[1:-1])
+        else:
+            graph.remove_nodes_from(path)
+
+    return graph
 
 def std(data):
-    pass
+    return statistics.stdev(data)
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
     pass
 
 def path_average_weight(graph, path):
-    pass
+    tmp = []
+    for i in range(len(path)-1):
+        tmp.append(graph.get_edge_data(path[i], path[i+1])['weight'])
+
+    return sum(tmp)/(len(path)-1)
 
 def solve_bubble(graph, ancestor_node, descendant_node):
     pass
@@ -157,14 +172,14 @@ def get_contigs(graph, starting_nodes, ending_nodes):
                 for path in nx.all_simple_paths(graph, starting_nodes[i], ending_nodes[n]):
                     tmp = path[0]
                     for r in range(1, len(path)):
-                        tmp = tmp + path[r][-1]
+                        tmp += path[r][-1]
                     contigs_list.append((tmp, len(tmp)))
     return contigs_list
 
 def save_contigs(contigs_list, output_file):
     with open(output_file, 'w') as f:
         for i in range(len(contigs_list)):
-            f.write(f">contig_{i+1} len={contigs_list[i][1]}\n")
+            f.write(f">contig_{i} len={contigs_list[i][1]}\n")
             f.write(fill(contigs_list[i][0]) + "\n")
 
 def fill(text, width=80):
@@ -198,7 +213,7 @@ def save_graph(graph, graph_file):
 
 
 if __name__ == '__main__':
-    file = '/home/arnaud/metagenomic/data/eva71_two_reads.fq'
+    file = '/home/arnaud/Metagenomic/debruijn-tp/data/eva71_two_reads.fq'
     kmer_size = 6
     kmer_dico = {}
     kmer_dico = build_kmer_dict(file, kmer_size)
@@ -207,6 +222,14 @@ if __name__ == '__main__':
     ending_nodes = get_sink_nodes(graph)
     contigs_list = get_contigs(graph, starting_nodes, ending_nodes)
     save_contigs(contigs_list, 'contig.txt')
+    
+    r = nx.DiGraph()
+    r.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
+    print(r.get_edge_data(1, 2)['weight'])
+
+
+
+    
     
 
 
