@@ -27,12 +27,12 @@ import random
 random.seed(9001)
 matplotlib.use("Agg")
 
-__author__ = "Your Name"
+__author__ = "Arnaud LY"
 __copyright__ = "Universite Paris Diderot"
-__credits__ = ["Your Name"]
+__credits__ = ["Arnaud LY"]
 __license__ = "GPL"
 __version__ = "1.0.0"
-__maintainer__ = "Your Name"
+__maintainer__ = "Arnaud LY"
 __email__ = "your@email.fr"
 __status__ = "Developpement"
 
@@ -311,16 +311,20 @@ def main():
     args = get_arguments()
     kmer_dict = build_kmer_dict(args.fastq_file, args.kmer_size)
     graph = build_graph(kmer_dict)
+
     starting_nodes = get_starting_nodes(graph)
-    ending_nodes = get_sink_nodes(graph)
-    graph = simplify_bubbles(graph)
     graph = solve_entry_tips(graph, starting_nodes)
+
+    ending_nodes = get_sink_nodes(graph)
     graph = solve_out_tips(graph, ending_nodes)
+
+    graph = simplify_bubbles(graph)
     contigs_list = get_contigs(graph, starting_nodes, ending_nodes)
     save_contigs(contigs_list, args.output_file)
 
     if args.graphimg_file:
         draw_graph(graph, args.graphimg_file)
+
 
 if __name__ == '__main__':
     main()
